@@ -1,0 +1,36 @@
+/* 重置所有元素的内外边距和边框 */
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-sizing: border-box;
+}
+
+/* 清除列表元素的默认样式 */
+ul, ol {
+    list-style: none;
+}
+
+/* 清除链接的默认样式 */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* 清除标题元素的默认样式 */
+h1, h2, h3, h4, h5, h6 {
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+/* 清除段落元素的默认样式 */
+p {
+    margin: 0;
+}
+
+:root {  
+    --normal:#545c6c;
+    --lighter:#6f7071;
+    --lightest:#d5d5d0;
+    --text--lightest:#FBFBFB;
+}
