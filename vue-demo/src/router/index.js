@@ -1,10 +1,9 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import IndexView from '@/views/IndexPage.vue'
 
 const routes = [
     {
         path:'/',
-        component:IndexView,
+        redirect:'/index',
     },
     {
         path:'/index',
@@ -40,3 +39,4 @@ const router = createRouter(
 )
 
 export default router
+

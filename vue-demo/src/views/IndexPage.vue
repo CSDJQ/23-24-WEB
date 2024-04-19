@@ -3,14 +3,6 @@
         <el-container>
             <el-header>
                 <el-page-header>
-                    <!-- 面包屑插槽 -->
-                    <template #breadcrumb>
-                        <el-breadcrumb separator="/">
-                            <el-breadcrumb-item to="/">Home</el-breadcrumb-item>
-                            <el-breadcrumb-item>Page</el-breadcrumb-item>
-                        </el-breadcrumb>
-                    </template>
-
                     <!-- 图标插槽 -->
                     <template #icon>
                         <div class="block">
@@ -68,7 +60,7 @@ const { circleUrl, avatarSize} = toRefs(state)
 
 <style scoped>
 .common-layout .el-header {
-    height: 80px;
+    height: 45px;
 }
 
 .common-layout .side {
