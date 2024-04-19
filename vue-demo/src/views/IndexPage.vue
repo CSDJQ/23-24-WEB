@@ -6,7 +6,7 @@
                     <!-- 图标插槽 -->
                     <template #icon>
                         <div class="block">
-                            <el-avatar :size="avatarSize" :src="circleUrl" />
+                            <el-avatar  :src="circleUrl" />
                         </div>
                     </template>
 
@@ -50,11 +50,10 @@ import { reactive, toRefs } from 'vue'
 
 const state = reactive({
   circleUrl: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
-  avatarSize: 'small',
 })
 
 
-const { circleUrl, avatarSize} = toRefs(state)
+const { circleUrl } = toRefs(state)
 </script>
 
 
@@ -70,10 +69,11 @@ const { circleUrl, avatarSize} = toRefs(state)
 }
 
 .common-layout .side .el-row{
-    padding: 20px;
-    width:150px;
-    justify-content: center;
+    padding: 30px;
+    width:200px;
     border-radius: 8px;
+    justify-content: center;
+    letter-spacing: 2px;
     transition: all 0.3s;
 }
 
@@ -84,6 +84,7 @@ const { circleUrl, avatarSize} = toRefs(state)
 
 .common-layout .side .el-row .el-icon{
     position:relative;
-    top:2px;
+    top:3px;
+    margin-right: 3px;
 }
 </style>

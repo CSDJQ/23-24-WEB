@@ -10,6 +10,10 @@ const routes = [
         component:()=>import('@/views/IndexPage.vue'),
         children:[
             {
+                path:'',
+                redirect:'/home'
+            },
+            {
                 path:'/home',
                 component:()=>import('@/views/HomeSonpage.vue')
             },

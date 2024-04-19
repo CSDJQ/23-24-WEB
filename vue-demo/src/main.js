@@ -4,6 +4,7 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import router from './router/index'
 import './assets/css/global.css';
+import * as echarts from "echarts";
 
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
@@ -22,3 +23,5 @@ app.use(router)
 
 // 挂载应用程序
 app.mount('#app')
+
+app.config.globalProperties.$echarts = echarts;
