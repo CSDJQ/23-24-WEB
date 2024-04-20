@@ -31,7 +31,10 @@ const routes = [
             },
         ]
     },
-   
+    {
+        path:'/toLogin',
+        component:()=>import('@/components/LoginComponent.vue')
+    },
 ]
 
 const router = createRouter(

@@ -12,18 +12,17 @@
 
                     <!-- 标题插槽 -->
                     <template #title>
-                        游客
+                        {{ Name }}
                     </template>
 
                     <!-- 额外内容插槽 -->
                     <template #extra>
-                        <el-button type="primary">Register</el-button>
-                        <el-button>Login</el-button>
+                        <el-button  @click="clickRegister">Register/Login</el-button>
                     </template>
                 </el-page-header>
             </el-header>
             <el-container>
-                <el-aside class="side">
+                <el-aside class="side" v-if=isLogin>
                     <router-link to="/home">
                         <el-row><el-icon><House /></el-icon>首页</el-row>
                     </router-link>
@@ -46,20 +45,37 @@
 </template>
 
 <script setup>
-import { reactive, toRefs } from 'vue'
+import { onMounted, reactive, toRefs } from 'vue'
+import { useRouter } from 'vue-router'; 
+
+const router = useRouter();  
 
 const state = reactive({
   circleUrl: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
+  isLogin: false,
+  Name: '游客',
 })
 
+const { circleUrl, isLogin, Name } = toRefs(state)
 
-const { circleUrl } = toRefs(state)
+function clickRegister(){
+    router.push('/toLogin');
+}
+
+onMounted(() => {
+    const username = sessionStorage["username"];
+    if (username) {
+        Name.value = username;
+        isLogin.value = true;
+    }
+})
+
 </script>
 
 
 <style scoped>
 .common-layout .el-header {
-    height: 45px;
+    height: 57px;
 }
 
 .common-layout .side {

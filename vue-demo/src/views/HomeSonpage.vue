@@ -13,7 +13,7 @@
         <el-col :span="4" :class="{selected:selectedType === '深市股票'}" @click="selectedType = '深市股票';refreshMark();">深市股票</el-col>
       </el-row>
 
-      <el-table :data="datashow" :stripe="true" @cell-click="handleCellClick">
+      <el-table :data="stockMark" :stripe="true" @cell-click="handleCellClick">
         <el-table-column prop="Code" label="代码"></el-table-column>
         <el-table-column prop="Name" label="名称"></el-table-column>
         <el-table-column prop="Price" label="最新价格"></el-table-column>
@@ -26,7 +26,8 @@
 
     
     <div class="trend" v-if="viewType==='Trend'">
-      <div ref="chart" style="width: 600px;height:400px;"></div>  
+      <div ref="chart" id="chart"></div>
+      <el-col class="tips">{{ this.timeDisplayer }}秒后刷新</el-col>
     </div>
     
   </div>
@@ -37,6 +38,7 @@
 import axios from 'axios';
 import * as echarts from "echarts";
 
+var chartInstance = null; // 用于存储ECharts实例  
 export default{
   data(){
     const initialData = {  
@@ -72,14 +74,14 @@ export default{
         "002007": 22.03, 
     }
     return {
-      datashow:[],
+      stockMark:[], 
       initialData:initialData,
       selectedType:'沪市股票',
       timer:null,
       timeDisplayer:5,
       viewType:'Mark',
-      chartInstance: null, // 用于存储ECharts实例  
-      stockPrices: [], // 假设这是你从后端动态获取的股票价格数据  
+      stockTrend: [], // 假设这是你从后端动态获取的股票价格数据  
+      selectedCode:'',
     };
   },
   methods:{
@@ -109,18 +111,21 @@ export default{
         }
         // console.log(filteredData);
         // console.log(this.selectedType);
-        this.datashow = filteredData;
+        this.stockMark = filteredData;
       }).catch(error => {
         console.error(error);
       })
     },
     setTimer(){
       // console.log('settime');
+      
+      this.timeDisplayer = 5;
       this.timer = setInterval(() => {
         if(this.timeDisplayer > 0){
           this.timeDisplayer--;
         }else{
-          this.refreshMark();
+          if(this.viewType === 'Mark')this.refreshMark();
+          else this.refreshTrend();
         }
       },1000)
     },
@@ -133,50 +138,111 @@ export default{
     },
     goBack() {
       // console.log('go back');
+      this.cleanTimer(); //清除Trend的更新定时器
+      this.selectedCode = '';
       this.viewType = 'Mark';
       this.refreshMark();
-      this.setTimer();
+      this.setTimer();  //设置Mark的更新定时器
     },
     handleCellClick(row){
-      this.cleanTimer();
+      this.cleanTimer();  //清除Mark的更新定时器
       this.viewType = 'Trend';
-      this.refreshTrend(row.Code);
-      console.log(this.stockPrices);
+      this.selectedCode = row.Code;
+      this.initChart();
+      this.setTimer();  //设置Trend的更新定时器
+      // console.log(this.stockTrend);
     },
-    refreshTrend(code){
-      axios.get('/api/getStockPrice?code='+code).then(reponse =>{
-        this.stockPrices = reponse.data;
-        this.$nextTick(() => {
-          this.initChart(); // 确保在 DOM 更新后调用 initChart  
-        });
-        // console.log(this.stockPrices);
+    refreshTrend(){
+      this.timeDisplayer = 5;
+      axios.get('/api/getStockPrice?code='+this.selectedCode).then(reponse =>{
+        this.stockTrend = reponse.data;
+        this.updateChart();
+        // console.log(this.stockTrend);
       })
     },
     initChart() {
-      // 基于准备好的dom，初始化echarts实例  
-      this.chartInstance = echarts.init(this.$refs.chart);  
-      // 指定图表的配置项和数据  
-      const option = {  
-        title: {  
-          text: '股票历史价格曲线图'  
-        },  
-        tooltip: {  
-          trigger: 'axis' // 坐标轴触发  
-        },  
-        xAxis: {  
+      axios.get('/api/getStockPrice?code='+this.selectedCode).then(reponse =>{
+        this.stockTrend = reponse.data;
+        // console.log(this.stockTrend);
+        this.$nextTick(() => {
+          // 确保在拿到数据后调用 initChart
+          // 基于准备好的dom，初始化echarts实例  
+          chartInstance = echarts.init(this.$refs.chart);  
+          
+          // 拆分配置项和数据  
+          const titleOption = {  
+            text: '股票历史价格曲线图'  
+          };  
+          
+          const tooltipOption = {  
+            trigger: 'axis' // 坐标轴触发  
+          };  
+          
+          const xAxisOption = {  
+            type: 'category',  
+            data: this.stockTrend.map((_, index) => `Day ${index + 1}`) // 假设X轴是日期序列  
+          };  
+          
+          const yAxisOption = {  
+            type: 'value'  
+          };  
+          
+          const seriesOption = {  
+            data: this.stockTrend, // Y轴数据  
+            type: 'line' // 图表类型为折线图  
+          }; 
+
+          // dataZoom 组件配置  
+          const dataZoomOption = [  
+            {  
+              type: 'slider', // 滑动条型 dataZoom 组件  
+              start: 80, 
+              end: 100 
+            },  
+            {  
+              type: 'inside', // 内置型 dataZoom 组件  
+              start: 80, 
+              end: 100 
+            }  
+          ]; 
+          
+          // 合并所有配置项  
+          const option = {  
+            title: titleOption,  
+            tooltip: tooltipOption,  
+            xAxis: xAxisOption,  
+            yAxis: yAxisOption,  
+            series: [seriesOption],
+            dataZoom: dataZoomOption
+          };  
+          
+          // 使用刚指定的配置项和数据显示图表  
+          chartInstance.setOption(option);
+        });
+        // console.log(this.stockTrend);
+      })
+    },
+    updateChart() {
+      if (chartInstance) {
+        const xAxisOption = {  
           type: 'category',  
-          data: this.stockPrices.map((_, index) => `Day ${index + 1}`), // 假设X轴是日期序列  
-        },  
-        yAxis: {  
+          data: this.stockTrend.map((_, index) => `Day ${index + 1}`) // 假设X轴是日期序列  
+        };
+        const yAxisOption = {  
           type: 'value'  
-        },  
-        series: [{  
-          data: this.stockPrices, // Y轴数据  
-          type: 'line' // 图表类型为折线图  
-        }]  
-      };  
-      // 使用刚指定的配置项和数据显示图表  
-      this.chartInstance.setOption(option);   
+        };
+        const seriesOption = [{  
+          data: this.stockTrend, // 假设后端返回的数据中包含price字段  
+          type: 'line'
+        }]; 
+          
+        // 使用刚指定的配置项和数据显示图表。  
+        chartInstance.setOption({  
+          xAxis: xAxisOption,
+          yAxis: yAxisOption,  
+          series: seriesOption  
+        }, false); // 第二个参数为false表示使用合并模式，不会清除之前的配置项  
+      }  
     },  
   },
   mounted() {
@@ -213,5 +279,11 @@ export default{
   padding: 0;
   color: gray;
   font-size: 15px;
+}
+
+.contain .trend #chart{
+  width: 800px;
+  height: 500px;
+  margin: 0 auto;
 }
 </style>
