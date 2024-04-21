@@ -120,7 +120,7 @@ display: flex;
 justify-content: center;
 align-items: center;
 min-height: 100vh;
-background: #111;
+background: #081d32;
 width: 100%;
 overflow: hidden;
 }
@@ -217,6 +217,7 @@ overflow: hidden;
 .login .inputBx input::placeholder {
   color: rgba(255, 255, 255, 0.75);
 }
+
 .login .links {
   position: relative;
   width: 100%;

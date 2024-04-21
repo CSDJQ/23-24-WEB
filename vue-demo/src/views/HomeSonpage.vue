@@ -1,8 +1,8 @@
 <template>
   <div class="contain">
-    <el-page-header @back="goBack">
+    <el-page-header @back="goBack" v-if="viewType === 'Trend'">
       <template #content>
-        <span class="text-large font-600 mr-3"> Title </span>
+        <span class="text-large font-600 mr-3">股票历史价格曲线图</span>
       </template>
     </el-page-header>
 
@@ -25,7 +25,7 @@
     </div>
 
     
-    <div class="trend" v-if="viewType==='Trend'">
+    <div class="trend" v-if="viewType ==='Trend'">
       <div ref="chart" id="chart"></div>
       <el-col class="tips">{{ this.timeDisplayer }}秒后刷新</el-col>
     </div>
@@ -80,8 +80,9 @@ export default{
       timer:null,
       timeDisplayer:5,
       viewType:'Mark',
-      stockTrend: [], // 假设这是你从后端动态获取的股票价格数据  
+      stockTrend: [], // 从后端动态获取的股票价格数据  
       selectedCode:'',
+      selectedName:'',
     };
   },
   methods:{
@@ -144,13 +145,16 @@ export default{
       this.refreshMark();
       this.setTimer();  //设置Mark的更新定时器
     },
-    handleCellClick(row){
-      this.cleanTimer();  //清除Mark的更新定时器
-      this.viewType = 'Trend';
-      this.selectedCode = row.Code;
-      this.initChart();
-      this.setTimer();  //设置Trend的更新定时器
-      // console.log(this.stockTrend);
+    handleCellClick(row, column){
+      if (column.property === 'Code' || column.property === 'Name') {
+        this.cleanTimer();  //清除Mark的更新定时器
+        this.viewType = 'Trend';
+        this.selectedCode = row.Code;
+        this.selectedName = row.Name;
+        this.initChart();
+        this.setTimer();  //设置Trend的更新定时器
+        // console.log(this.stockTrend);
+      }
     },
     refreshTrend(){
       this.timeDisplayer = 5;
@@ -171,7 +175,7 @@ export default{
           
           // 拆分配置项和数据  
           const titleOption = {  
-            text: '股票历史价格曲线图'  
+            text: this.selectedName + '股票历史曲线图'
           };  
           
           const tooltipOption = {  
@@ -260,11 +264,23 @@ export default{
   table-layout: fixed;
   width: 100%;
 }
+::v-deep .el-table--enable-row-hover .el-table__body tr:hover > td {
+  color: #212e3e;
+  background-color: #eaf0f8 !important;
+}
+
+::v-deep .el-table--enable-row-hover .el-table__body tr > td:nth-child(1):hover,
+::v-deep .el-table--enable-row-hover .el-table__body tr > td:nth-child(2):hover {
+  text-decoration: underline;
+  color: blue;
+  cursor: pointer;
+}
 
 .contain .type .el-col{
-  padding: 15px;
-  margin: 20px 0;
-  font-size: 18px;
+  padding: 15px 5px;
+  margin: 10px 0;
+  font-size: 20px;
+  letter-spacing: 5px;
   cursor: pointer;
 }
 

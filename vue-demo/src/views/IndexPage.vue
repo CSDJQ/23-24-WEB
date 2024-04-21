@@ -12,30 +12,51 @@
 
                     <!-- 标题插槽 -->
                     <template #title>
-                        {{ Name }}
+                        <div style="font-size: 20px; font-weight: bold; color: var(--text--normal);">{{ Name }}</div>
+                    </template>
+
+                    <template #content>
+                        <!-- v-if=isLogin -->
+                        <el-row  class="nav">
+                            <router-link to="/home">
+                                <el-col  @click="clickNav($event, '首页')" :class="{active:selectedNav === '首页'}">
+                                    <el-icon><House /></el-icon>
+                                    <span class="navText">首页</span>
+                                </el-col>
+                            </router-link>
+                            <router-link to="/shop">
+                                <el-col @click="clickNav($event, '交易')" :class="{active:selectedNav === '交易'}">
+                                    <el-icon><CreditCard /></el-icon>
+                                    <span class="navText">交易</span>
+                                </el-col>
+                            </router-link>
+                            <router-link to="/have">
+                                <el-col @click="clickNav($event, '持仓')" :class="{active:selectedNav === '持仓'}">
+                                    <el-icon><ShoppingBag /></el-icon>
+                                    <span class="navText">持仓</span>
+                                </el-col>
+                            </router-link>
+                            <router-link to="/history">
+                                <el-col @click="clickNav($event, '历史订单')" :class="{active:selectedNav === '历史订单'}">
+                                    <el-icon><Tickets /></el-icon>
+                                    <span class="navText">历史订单</span>
+                                </el-col>
+                            </router-link>
+                        </el-row>
+                        <div class="nav-line" :style="{left:X+'px',width:Wid+'px'}"></div>
                     </template>
 
                     <!-- 额外内容插槽 -->
                     <template #extra>
-                        <el-button  @click="clickRegister">Register/Login</el-button>
+                        <el-button type="success" color="#394a5b" @click="clickRegister" round>
+                            <div class="loginButton">
+                                Register/Login
+                            </div>
+                        </el-button>
                     </template>
                 </el-page-header>
             </el-header>
             <el-container>
-                <el-aside class="side" v-if=isLogin>
-                    <router-link to="/home">
-                        <el-row><el-icon><House /></el-icon>首页</el-row>
-                    </router-link>
-                    <router-link to="/shop">
-                    <el-row><el-icon><CreditCard /></el-icon>交易</el-row>
-                    </router-link>
-                    <router-link to="/have">
-                    <el-row><el-icon><ShoppingBag /></el-icon>持仓</el-row>
-                    </router-link>
-                    <router-link to="/history">
-                    <el-row><el-icon><Tickets /></el-icon>历史订单</el-row>
-                    </router-link>
-                </el-aside>
                 <el-main>
                     <router-view></router-view>
                 </el-main>
@@ -54,12 +75,24 @@ const state = reactive({
   circleUrl: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
   isLogin: false,
   Name: '游客',
+  selectedNav: '首页',
+  X: 0,
+  Wid: 0,
 })
 
-const { circleUrl, isLogin, Name } = toRefs(state)
+const { circleUrl, isLogin, Name, selectedNav, X, Wid } = toRefs(state)
 
 function clickRegister(){
     router.push('/toLogin');
+}
+
+function clickNav(event, ntext) {
+    selectedNav.value = ntext;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const icon = event.currentTarget.querySelector('i');
+    const iconRect = icon.getBoundingClientRect();
+    X.value = iconRect.left - iconRect.width - 30 + rect.width/2;    
+    Wid.value = rect.width/2 + iconRect.width ;
 }
 
 onMounted(() => {
@@ -68,39 +101,73 @@ onMounted(() => {
         Name.value = username;
         isLogin.value = true;
     }
+    // 模拟点击了一次“首页”
+    const homeButton = document.querySelector('.nav .active');
+    const event = new MouseEvent('click', { bubbles: true });
+    homeButton.dispatchEvent(event);
 })
-
 </script>
 
 
 <style scoped>
 .common-layout .el-header {
-    height: 57px;
+    height: 70px;
+    padding: 10px 20px;
+    background: linear-gradient(180deg, rgba(97, 124, 193, 0.559), rgba(255, 255, 255, 0));
 }
 
-.common-layout .side {
+.common-layout .loginButton{
+    font-size: 16px;
+    color: var(--text--lightest);
+    padding:10px 5px;
+}
+
+.common-layout .nav {
     width: auto;
     height: 100%;
-    background-color: var(--lightest);
 }
 
-.common-layout .side .el-row{
-    padding: 30px;
-    width:200px;
-    border-radius: 8px;
+.common-layout .nav .el-col{
+    padding: 20px 30px;
+    border-radius: 30px;
     justify-content: center;
     letter-spacing: 2px;
     transition: all 0.3s;
 }
 
-.common-layout .side .el-row:hover{
+.common-layout .nav .el-col:hover{
     background-color: var(--normal);
     color: var(--text--lightest);
 }
 
-.common-layout .side .el-row .el-icon{
+.common-layout .nav .el-col .el-icon{
     position:relative;
     top:3px;
     margin-right: 3px;
 }
+
+.common-layout .nav-line {
+    height: 4px;
+    border-radius: 2px;
+    background-color: var(--normal);
+    transform : translateX(-50%);
+    position: absolute;
+    bottom: 0;
+    transition: 0.3s all;
+}
+
+.common-layout .active {
+    color: var(--normal);
+    font-weight: bold;
+}
+
+@media (max-width: 950px) {
+  .navText {
+    display: none;
+  }
+  .common-layout .nav-line {
+    width: 18px;
+  }
+}
+
 </style>

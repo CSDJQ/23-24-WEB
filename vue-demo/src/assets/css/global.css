@@ -5,6 +5,7 @@
     border: 0;
     box-sizing: border-box;
     font-family: "Quicksand", sans-serif;
+    letter-spacing: 1px;
 }
 
 /* 清除列表元素的默认样式 */
@@ -33,5 +34,6 @@ p {
     --normal:#15487D;
     --lighter:#7B808D;
     --lightest:#E1E2E5;
+    --text--normal:#0e1c27;
     --text--lightest:#FBFBFB;
 }
