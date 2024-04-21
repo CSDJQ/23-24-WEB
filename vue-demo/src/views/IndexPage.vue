@@ -16,8 +16,7 @@
                     </template>
 
                     <template #content>
-                        <!-- v-if=isLogin -->
-                        <el-row  class="nav">
+                        <el-row  class="nav" v-if=isLogin>
                             <router-link to="/home">
                                 <el-col  @click="clickNav($event, '首页')" :class="{active:selectedNav === '首页'}">
                                     <el-icon><House /></el-icon>
@@ -66,7 +65,7 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, toRefs } from 'vue'
+import { onMounted, reactive, toRefs , nextTick } from 'vue'
 import { useRouter } from 'vue-router'; 
 
 const router = useRouter();  
@@ -95,17 +94,21 @@ function clickNav(event, ntext) {
     Wid.value = rect.width/2 + iconRect.width ;
 }
 
-onMounted(() => {
-    const username = sessionStorage["username"];
-    if (username) {
-        Name.value = username;
-        isLogin.value = true;
-    }
-    // 模拟点击了一次“首页”
+onMounted(async () => {
+  const username = sessionStorage.getItem('username');
+  if (username) {
+    Name.value = username;
+    isLogin.value = true;
+
+    // 使用 nextTick 等待 .nav .active 元素被渲染出来
+    await nextTick();
+
+    // 获取 .nav .active 元素并模拟点击
     const homeButton = document.querySelector('.nav .active');
     const event = new MouseEvent('click', { bubbles: true });
     homeButton.dispatchEvent(event);
-})
+  }
+});
 </script>
 
 
