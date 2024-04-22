@@ -19,6 +19,16 @@
         <el-table-column prop="Price" label="最新价格"></el-table-column>
         <el-table-column prop="Crange" label="当日涨跌幅"></el-table-column>
         <el-table-column prop="Cprice" label="当日涨跌价格"></el-table-column>
+        <el-table-column v-if="this.isLogin" prop="Select" label="加入待交易">
+        <template #default="scoped">
+          <el-icon size="20px" v-show="this.selectedStock.find(item => item.Code === scoped.row.Code)" >  
+            <Remove />  
+          </el-icon>
+          <el-icon size="20px" v-show="!this.selectedStock.find(item => item.Code === scoped.row.Code)" >
+            <CirclePlusFilled />
+          </el-icon>
+        </template>
+        </el-table-column>
       </el-table>
       
       <el-col class="tips">{{ this.timeDisplayer }}秒后刷新</el-col>
@@ -83,6 +93,8 @@ export default{
       stockTrend: [], // 从后端动态获取的股票价格数据  
       selectedCode:'',
       selectedName:'',
+      isLogin: false,
+      selectedStock:[],
     };
   },
   methods:{
@@ -100,7 +112,7 @@ export default{
           case '深市股票':
           filteredData = data.filter(item => item.Code.toString().startsWith('3'));break;
         }
-
+        
         for(let i = 0; i < filteredData.length; i++){
           const code = filteredData[i].Code; 
           const initial_data = this.initialData[code];
@@ -119,7 +131,6 @@ export default{
     },
     setTimer(){
       // console.log('settime');
-      
       this.timeDisplayer = 5;
       this.timer = setInterval(() => {
         if(this.timeDisplayer > 0){
@@ -154,6 +165,13 @@ export default{
         this.initChart();
         this.setTimer();  //设置Trend的更新定时器
         // console.log(this.stockTrend);
+      }else if(column.property === 'Select'){
+        const existingItem = this.selectedStock.find(item => item.Code === row.Code);
+        if(existingItem){
+          this.selectedStock = this.selectedStock.filter(item => item.Code !== row.Code);
+        }else{
+          this.selectedStock.push({Code:row.Code, Name:row.Name});
+        }
       }
     },
     refreshTrend(){
@@ -247,14 +265,25 @@ export default{
           series: seriesOption  
         }, false); // 第二个参数为false表示使用合并模式，不会清除之前的配置项  
       }  
-    },  
+    },
   },
   mounted() {
     this.refreshMark();
     this.setTimer();
+    const username = sessionStorage.getItem('username');
+    if (username) {
+      this.isLogin = true;
+      const selectedStock = sessionStorage.getItem('selectedStock');
+      if(selectedStock){
+        this.selectedStock = JSON.parse(selectedStock);
+      }
+    }else{
+      this.isLogin = false;
+    }
   },
   beforeUnmount(){
     this.cleanTimer();
+    sessionStorage.setItem('selectedStock', JSON.stringify(this.selectedStock));
   }
 }
 </script>

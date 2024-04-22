@@ -19,7 +19,8 @@ const routes = [
             },
             {
                 path:'/shop',
-                component:()=>import('@/views/ShopSonpage.vue')
+                component:()=>import('@/views/ShopSonpage.vue'),
+                props: true,
             },
             {
                 path:'/have',
@@ -34,6 +35,12 @@ const routes = [
     {
         path:'/toLogin',
         component:()=>import('@/components/LoginComponent.vue')
+    },
+    {
+        path:'/success/:message',
+        name:'Success',
+        component:()=>import('@/components/SuccessComponent.vue'),
+        props: true,
     },
 ]
 
