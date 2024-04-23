@@ -3,7 +3,7 @@
         <el-icon size="150px"><CircleCheckFilled /></el-icon>
         <p>{{ this.tip }}</p>
         <p>{{ this.timeDisplayer }}秒后跳转回首页</p>
-        <el-button @click="this.$router.push('/home');">点击立刻返回首页</el-button>  
+        <el-button type="primary" @click="this.$router.push('/home');" round>点击立刻返回首页</el-button>  
     </div>
 </template>
 
@@ -56,5 +56,9 @@ export default{
     margin: 20px;
     font-size: 30px;
 
+}
+.contain .el-button{
+    padding: 30px;
+    font-size: 20px;
 }
 </style>

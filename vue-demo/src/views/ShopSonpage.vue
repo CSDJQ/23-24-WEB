@@ -58,7 +58,7 @@ export default{
         handleSubmit(row){
             if (row.Code && row.Trade && row.Price && row.Amount) {
                 // http://127.0.0.1:12345/trade?username={用户名}&code={股票代码}&direction={交易方向}&price={挂单价格}&amount={挂单数量}
-                const url = "http://127.0.0.1:12345/trade?username=" + sessionStorage.getItem('username') + "&code="
+                const url = "/api/trade?username=" + sessionStorage.getItem('username') + "&code="
                     + row.Code + "&direction=" + row.Trade + "&price=" + row.Price + "&amount=" + row.Amount;
                 fetch(url)
                 .then(response => response.text())
@@ -69,11 +69,13 @@ export default{
                         case '0':this.tip = '用户错误或股票代码不存在';break;//系统无用户/用户名不存在/股票代码不存在等情况时
                         case '1':{
                             message = '委托成功';
+                            this.selectedStock = this.selectedStock.filter(item => item.Code !== row.Code);
                             this.$router.push({ name: 'Success', params: { message } });
                             break;
                         }//买入价低于最新价，或卖出价高于最新价，只记录委托成功，后续不会自动成交
                         case '2':{
                             message = '交易成功';
+                            this.selectedStock = this.selectedStock.filter(item => item.Code !== row.Code);
                             this.$router.push({ name: 'Success', params: { message } });
                             break;
                         }//以最新价买入或卖出
@@ -114,7 +116,7 @@ export default{
         if(selectedStock){
             this.selectedStock = JSON.parse(selectedStock);
         }
-        const url = "http://127.0.0.1:12345/getBalance?username=" + sessionStorage.getItem('username');
+        const url = "/api/getBalance?username=" + sessionStorage.getItem('username');
         fetch(url)
         .then(response => response.text())
         .then(data =>{
