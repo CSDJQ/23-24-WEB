@@ -63,7 +63,7 @@ export default{
                 fetch(url)
                 .then(response => response.text())
                 .then(data => {
-                    console.log(data);
+                    // console.log(data);
                     var message = '';
                     switch(data){
                         case '0':this.tip = '用户错误或股票代码不存在';break;//系统无用户/用户名不存在/股票代码不存在等情况时
