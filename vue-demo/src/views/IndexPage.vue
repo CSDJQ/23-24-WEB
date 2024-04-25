@@ -47,9 +47,14 @@
 
                     <!-- 额外内容插槽 -->
                     <template #extra>
-                        <el-button type="success" color="#394a5b" @click="clickRegister" round>
+                        <el-button v-if="isLogin" type="success" color="#4e55bf" @click="clickLogout" round>
                             <div class="loginButton">
-                                Register/Login
+                                退出账号
+                            </div>
+                        </el-button>
+                        <el-button v-else type="success" color="#4e55bf" @click="clickRegister" round>
+                            <div class="loginButton">
+                                登录/注册
                             </div>
                         </el-button>
                     </template>
@@ -83,6 +88,13 @@ const { circleUrl, isLogin, Name, selectedNav, X, Wid } = toRefs(state)
 
 function clickRegister(){
     router.push('/toLogin');
+}
+
+function clickLogout(){
+    // 清空sessionStorage
+    sessionStorage.clear();
+    // 刷新页面内容
+    location.reload();
 }
 
 function clickNav(event, ntext) {

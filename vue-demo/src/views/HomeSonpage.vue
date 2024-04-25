@@ -13,7 +13,7 @@
         <el-col :span="4" :class="{selected:selectedType === '深市股票'}" @click="selectedType = '深市股票';refreshMark();">深市股票</el-col>
       </el-row>
 
-      <el-table :data="stockMark" :stripe="true" @cell-click="handleCellClick">
+      <el-table :data="stockMark" @cell-click="handleCellClick">
         <el-table-column prop="Code" label="代码"></el-table-column>
         <el-table-column prop="Name" label="名称"></el-table-column>
         <el-table-column prop="Price" label="最新价格"></el-table-column>

@@ -1,7 +1,7 @@
 <template>
     <div class="contain">
         <h3 class="remainder">账户余额：{{ this.balance }}</h3>
-        <el-table :data="Inventory" :stripe="true">
+        <el-table :data="Inventory">
             <el-table-column prop="Code" label="代码"></el-table-column>
             <el-table-column prop="Name" label="名称"></el-table-column>
             <el-table-column prop="Amount" label="持仓数量"></el-table-column>
@@ -99,7 +99,6 @@ export default{
                     };
                 });
                 this.Inventory = result;
-                console.log(result);
             } catch (error) {  
                 console.error(error);  
                 window.alert("Error fetching data!");  

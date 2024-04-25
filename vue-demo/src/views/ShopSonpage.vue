@@ -3,8 +3,7 @@
         <!-- @cell-click="handleCellClick" -->
         <h3 class="remainder">账户余额：{{ this.balance }}</h3>
         <h3 class="tip">{{ this.tip }}</h3>
-        <el-table :data="selectedStock" :stripe="true">
-            
+        <el-table :data="selectedStock">
             <el-table-column label="取消" width="60px">
                 <template #default="scoped">  
                     <el-icon size="20px"  @click="clickRemove(scoped.row)"><Remove /></el-icon>
