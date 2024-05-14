@@ -1,0 +1,20 @@
+# 项目根目录  
+D:\Projects\23-24-WEB\vue-demo\src  
+├─App.vue             # Vue.js 项目的入口组件，包含应用的根元素和路由视图  
+├─main.js             # Vue.js 项目的入口文件，创建 Vue 实例并挂载到 DOM 上  
+├─tree.txt           # 目录树结构文本文件  
+├─views  # 包含页面组件的目录  
+|   ├─HaveSonpage.vue     # 持仓相关的子页面组件  
+|   ├─HistorySonpage.vue  # 历史订单相关的子页面组件  
+|   ├─HomeSonpage.vue     # 大盘行情和个股详情相关的子页面组件  
+|   ├─IndexPage.vue       # 索引页面组件  
+|   └─ShopSonpage.vue     # 交易相关的子页面组件  
+├─router  # 路由配置文件目录  
+|   ├─auth.js           # 路由认证和权限控制相关配置  
+|   └─index.js          # 路由的主配置文件，定义路由映射  
+├─components  # 存放公共组件的目录
+|     ├─LoginComponent.vue  # 登录组件  
+|     └─SuccessComponent.vue  # 成功提示组件
+├─assets  # 存放静态资源的目录
+|   ├─css  
+|   |  └─global.css    # 全局 CSS 样式文件

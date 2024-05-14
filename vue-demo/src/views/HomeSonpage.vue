@@ -13,7 +13,7 @@
         <el-col :span="4" :class="{selected:selectedType === '深市股票'}" @click="selectedType = '深市股票';refreshMark();">深市股票</el-col>
       </el-row>
 
-      <el-table :data="stockMark" @cell-click="handleCellClick">
+      <el-table :data="stockMark" @cell-click="handleCellClick" :cell-style="cellStyle">
         <el-table-column prop="Code" label="代码"></el-table-column>
         <el-table-column prop="Name" label="名称"></el-table-column>
         <el-table-column prop="Price" label="最新价格"></el-table-column>
@@ -95,6 +95,7 @@ export default{
       selectedName:'',
       isLogin: false,
       selectedStock:[],
+      startTime:0,
     };
   },
   methods:{
@@ -122,15 +123,13 @@ export default{
           filteredData[i].Crange = rate > 0 ? '+'+rate.toFixed(2)+'%':rate.toFixed(2)+'%';
           filteredData[i].Cprice = Cprice.toFixed(2);
         }
-        // console.log(filteredData);
-        // console.log(this.selectedType);
         this.stockMark = filteredData;
       }).catch(error => {
         console.error(error);
+        alert('refreshMark error');
       })
     },
     setTimer(){
-      // console.log('settime');
       this.timeDisplayer = 5;
       this.timer = setInterval(() => {
         if(this.timeDisplayer > 0){
@@ -142,7 +141,6 @@ export default{
       },1000)
     },
     cleanTimer(){
-      // console.log("release timer");
       if (this.timer) {  
         clearInterval(this.timer);  
         this.timer = null;
@@ -164,7 +162,6 @@ export default{
         this.selectedName = row.Name;
         this.initChart();
         this.setTimer();  //设置Trend的更新定时器
-        // console.log(this.stockTrend);
       }else if(column.property === 'Select'){
         const existingItem = this.selectedStock.find(item => item.Code === row.Code);
         if(existingItem){
@@ -179,55 +176,56 @@ export default{
       axios.get('/api/getStockPrice?code='+this.selectedCode).then(reponse =>{
         this.stockTrend = reponse.data;
         this.updateChart();
-        // console.log(this.stockTrend);
       })
     },
     initChart() {
       axios.get('/api/getStockPrice?code='+this.selectedCode).then(reponse =>{
         this.stockTrend = reponse.data;
-        // console.log(this.stockTrend);
         this.$nextTick(() => {
-          // 确保在拿到数据后调用 initChart
+        // 获取当前时间戳 
+        const now = Date.now();
+        // 计算开始时间的时间戳（毫秒）
+        this.startTime = now - (this.stockTrend.length * 5 * 1000);
+        const startTimeStamp = this.startTime;
+        const xAxisData = [];  
+        for (let i = 0; i < this.stockTrend.length; i++) {
+          const dataPointTimeStamp = startTimeStamp + (i * 5 * 1000);
+          const date = new Date(dataPointTimeStamp);
+          const dateString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });   
+          xAxisData.push(dateString);  
+        }
           // 基于准备好的dom，初始化echarts实例  
-          chartInstance = echarts.init(this.$refs.chart);  
-          
-          // 拆分配置项和数据  
+          chartInstance = echarts.init(this.$refs.chart);
           const titleOption = {  
             text: this.selectedName + '股票历史曲线图'
           };  
-          
           const tooltipOption = {  
-            trigger: 'axis' // 坐标轴触发  
-          };  
-          
+            trigger: 'axis' 
+          };
           const xAxisOption = {  
             type: 'category',  
-            data: this.stockTrend.map((_, index) => `Day ${index + 1}`) // 假设X轴是日期序列  
-          };  
-          
+            data:xAxisData
+          };
           const yAxisOption = {  
             type: 'value'  
-          };  
-          
+          };
           const seriesOption = {  
-            data: this.stockTrend, // Y轴数据  
-            type: 'line' // 图表类型为折线图  
-          }; 
-
+            data: this.stockTrend, // Y轴数据
+            type: 'line'
+          };
           // dataZoom 组件配置  
           const dataZoomOption = [  
             {  
-              type: 'slider', // 滑动条型 dataZoom 组件  
+              type: 'slider', // 滑动条型dataZoom 组件  
               start: 80, 
               end: 100 
             },  
             {  
-              type: 'inside', // 内置型 dataZoom 组件  
+              type: 'inside', // 内置型dataZoom 组件  
               start: 80, 
               end: 100 
             }  
-          ]; 
-          
+          ];
           // 合并所有配置项  
           const option = {  
             title: titleOption,  
@@ -236,25 +234,34 @@ export default{
             yAxis: yAxisOption,  
             series: [seriesOption],
             dataZoom: dataZoomOption
-          };  
-          
-          // 使用刚指定的配置项和数据显示图表  
+          }; 
+          // 显示图表  
           chartInstance.setOption(option);
         });
-        // console.log(this.stockTrend);
       })
     },
     updateChart() {
       if (chartInstance) {
+        const startTimeStamp = this.startTime;
+
+        // 初始化X轴数据数组  
+        const xAxisData = [];
+        for (let i = 0; i < this.stockTrend.length; i++) {
+          const dataPointTimeStamp = startTimeStamp + (i * 5 * 1000);
+          const date = new Date(dataPointTimeStamp);   
+          const dateString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          xAxisData.push(dateString);  
+        }  
+
         const xAxisOption = {  
-          type: 'category',  
-          data: this.stockTrend.map((_, index) => `Day ${index + 1}`) // 假设X轴是日期序列  
+          type: 'category',
+          data:xAxisData
         };
         const yAxisOption = {  
           type: 'value'  
         };
         const seriesOption = [{  
-          data: this.stockTrend, // 假设后端返回的数据中包含price字段  
+          data: this.stockTrend, 
           type: 'line'
         }]; 
           
@@ -265,6 +272,15 @@ export default{
           series: seriesOption  
         }, false); // 第二个参数为false表示使用合并模式，不会清除之前的配置项  
       }  
+    },
+    cellStyle (row) {
+      if (row.row.Crange[0] === '+' && (row.columnIndex === 3||row.columnIndex ===4)) {
+        return { color: 'red' };
+      } 
+      else if(row.row.Crange[0] === '-' && (row.columnIndex === 3||row.columnIndex ===4)){
+        return { color: 'green' };
+      }
+      return;
     },
   },
   mounted() {
@@ -284,7 +300,7 @@ export default{
   beforeUnmount(){
     this.cleanTimer();
     sessionStorage.setItem('selectedStock', JSON.stringify(this.selectedStock));
-  }
+  },
 }
 </script>
 
@@ -292,6 +308,7 @@ export default{
 .contain .el-table {
   table-layout: fixed;
   width: 100%;
+  margin-top: 20px;
 }
 ::v-deep .el-table--enable-row-hover .el-table__body tr:hover > td {
   color: #212e3e;
@@ -311,12 +328,28 @@ export default{
   font-size: 20px;
   letter-spacing: 5px;
   cursor: pointer;
+  border-radius:50px;
+  border: 10px solid #fff;
+}
+
+.contain .type .el-col::before {  
+  content: "";  
+  position: absolute;  
+  top: 10px;  
+  left: 0;  
+  right: 0;  
+  bottom: 10px;  
+  width:50%;
+  background-color: #fff; /* 上层半透明蓝色背景 */  
+  border-radius:50px;
+  box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.1), 0 4px 8px 0 rgba(0, 0, 0, 0.1);
+  z-index: -1;
 }
 
 .type .selected {
-  border-radius: 8px;
-  background-color: var(--normal);
-  color: var(--text--lightest);
+  background-color: #e6eef9;
+  color: #185ee0;
+  transition: color 0.15s ease-in;
 }
 
 .contain .tips{

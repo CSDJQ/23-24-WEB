@@ -11,7 +11,8 @@
                     <el-col :span="6" class="text-left">{{ stateContent(item.State)}}</el-col>
                     <el-col :span="6" class="text-left">{{ item.Name }}</el-col>
                     <el-col :span="6" class="text-left">{{ item.Code }}</el-col>
-                    <el-col :span="6" class="text-right" :class="{ 'sell-color': item.Direction, 'buy-color': !item.Direction, 'gray-color': isFail(item.State) }">
+                    <el-col :span="6" class="text-right" :class="{ 'sell-color': item.Direction, 
+                        'buy-color': !item.Direction, 'gray-color': isFail(item.State) }">
                         {{ item.Direction ? '卖出' : '买入' }}
                     </el-col>
                 </el-row>
@@ -34,22 +35,6 @@
         </div>
     </div>
 </template>
- <!-- /api/getTradeRecord?username=test
-返回：
-用户交易记录，Amount=，Code=股票代码，Direction=交易方向（0=买，1=卖），KnockPrice=成交价格，
-No=交易单号（自动生成的UUID），Price=挂单价格，State=交易状态（说明见后），TradeTime=交易时间
-[
-    {
-        "Amount": 100,
-        "Code": "601398",
-        "Direction": 0,
-        "KnockPrice": 4.7,
-        "No": "1ac6f47e-f104-49ff-81c2-3fc8ab90da1c",
-        "Price": 5,
-        "State": 2,
-        "TradeTime": "2024-03-11 22:14:26"
-    }
-] -->
 
 <script>
 export default{
@@ -67,13 +52,11 @@ export default{
                 if(!username){
                     throw new Error('Username not found');
                 }
-
                 const responseRecord = await fetch(`/api/getTradeRecord?username=${username}`);
                 if(!responseRecord.ok){
                     throw new Error('Failed to fetch record');
                 }
                 const History =await responseRecord.json();
-
                 const responseMark = await fetch('/api/getMarketPrice');
                 if (!responseMark.ok) {  
                 throw new Error('Failed to fetch Mark');  
@@ -254,11 +237,3 @@ input:checked[type="checkbox"]::before {
 }
 
 </style>
-<!-- 
-
-
-
-
-.card:last-child {
-  margin-right: auto;
-} -->

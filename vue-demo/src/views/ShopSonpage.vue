@@ -1,6 +1,5 @@
 <template>
     <div class="contain">
-        <!-- @cell-click="handleCellClick" -->
         <h3 class="remainder">账户余额：{{ this.balance }}</h3>
         <h3 class="tip">{{ this.tip }}</h3>
         <el-table :data="selectedStock">
@@ -56,13 +55,11 @@ export default{
         },
         handleSubmit(row){
             if (row.Code && row.Trade && row.Price && row.Amount) {
-                // http://127.0.0.1:12345/trade?username={用户名}&code={股票代码}&direction={交易方向}&price={挂单价格}&amount={挂单数量}
                 const url = "/api/trade?username=" + sessionStorage.getItem('username') + "&code="
                     + row.Code + "&direction=" + row.Trade + "&price=" + row.Price + "&amount=" + row.Amount;
                 fetch(url)
                 .then(response => response.text())
                 .then(data => {
-                    // console.log(data);
                     var message = '';
                     switch(data){
                         case '0':this.tip = '用户错误或股票代码不存在';break;//系统无用户/用户名不存在/股票代码不存在等情况时
@@ -87,24 +84,6 @@ export default{
             }else{
                 this.tip = '提交失败，不能为空';
             }
-            
-            // 错误=0，		
-            // 委托成功=1，	
-            // 交易成功=2，	
-            // 废单=3，		
-            // 账户余额不足=4，
-            // 持仓余额不足=5
-// 挂单价格超出涨跌幅限制→废单
-// 买入时：
-// 挂单金额小于股票实时价格→委托成功
-// 账户余额小于（股票实时价格*挂单数量）→账户余额不足
-// 其它情况→交易成功
-// 卖出时：
-// 用户未持有指定股票 或 持有数量小于挂单数量→持仓余额不足
-// 挂单价格大于股票实时价格→委托成功
-// 其它情况→交易成功
-// 每次交易成功时，成交价会在实时价格基础上浮动1%，但不超过涨跌幅限制，同时修改用户的持仓和账户余额数据。
-
         },
         clearTip() {
             this.tip = '';

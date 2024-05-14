@@ -26,7 +26,7 @@
 </template>
 
 <script>
-
+import { login } from '../router/auth';
 export default {
   data(){
     return {
@@ -60,7 +60,8 @@ export default {
           this.checkPassword = '';
           return;
         }else{
-          const url = 'http://127.0.0.1:12345/regist?username='+this.username+'&pwd='+this.password;
+          // 注册逻辑
+          const url = '/api/regist?username='+this.username+'&pwd='+this.password;
           fetch(url)
           .then(response => response.text())
           .then(data => {
@@ -80,11 +81,10 @@ export default {
             console.log(data);
             console.log('yes');
           })
-          // 注册逻辑
         }
       }else{
         // login
-        const url = 'http://127.0.0.1:12345/login?username='+this.username+'&pwd='+this.password;
+        const url = '/api/login?username='+this.username+'&pwd='+this.password;
         //登录逻辑
         fetch(url)
           .then(response => response.text())
@@ -92,6 +92,7 @@ export default {
             if(data === 'true'){
               sessionStorage.setItem('username',this.username);
               this.$router.push('/index');
+              login();
             }else{
               this.tip = '用户不存在或密码错误！';
               this.unmatch = true;

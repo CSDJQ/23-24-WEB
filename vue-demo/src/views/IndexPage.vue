@@ -12,7 +12,7 @@
 
                     <!-- 标题插槽 -->
                     <template #title>
-                        <div style="font-size: 20px; font-weight: bold; color: var(--text--normal);">{{ Name }}</div>
+                        <div style="font-size: 20px; font-weight: bold; color: var(--text-normal);">{{ Name }}</div>
                     </template>
 
                     <template #content>
@@ -47,7 +47,7 @@
 
                     <!-- 额外内容插槽 -->
                     <template #extra>
-                        <el-button v-if="isLogin" type="success" color="#4e55bf" @click="clickLogout" round>
+                        <el-button v-if="isLogin" type="success" color="#185ee0" @click="clickLogout" round>
                             <div class="loginButton">
                                 退出账号
                             </div>
@@ -70,6 +70,7 @@
 </template>
 
 <script setup>
+import { logout } from '@/router/auth';
 import { onMounted, reactive, toRefs , nextTick } from 'vue'
 import { useRouter } from 'vue-router'; 
 
@@ -91,6 +92,7 @@ function clickRegister(){
 }
 
 function clickLogout(){
+    logout();
     // 清空sessionStorage
     sessionStorage.clear();
     // 刷新页面内容
@@ -133,7 +135,7 @@ onMounted(async () => {
 
 .common-layout .loginButton{
     font-size: 16px;
-    color: var(--text--lightest);
+    color: var(--text-lightest);
     padding:10px 5px;
 }
 
@@ -152,7 +154,7 @@ onMounted(async () => {
 
 .common-layout .nav .el-col:hover{
     background-color: var(--normal);
-    color: var(--text--lightest);
+    color: var(--text-lightest);
 }
 
 .common-layout .nav .el-col .el-icon{
