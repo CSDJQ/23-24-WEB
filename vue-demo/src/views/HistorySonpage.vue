@@ -1,11 +1,41 @@
 <template>
     <div class="contain">
-        <div class="btn-container">
-            只显示有效单
-            <input type="checkbox" name="" id="" v-model="isPressed" @change="handleCheckboxChange"  />
-        </div>
 
-        <div class="card-container">
+        <div class="container">  
+            <div class="btn-container left">  
+            以表格形式  
+            <input type="checkbox" name="" id="" v-model="onOff"/> 
+            以卡片形式
+            </div>  
+            <div class="btn-container right">  
+            只显示有效单  
+            <input type="checkbox" name="" id="" v-model="isPressed" @change="ChangeFilter" />  
+            </div>  
+        </div>  
+
+        <el-table :data="showHistory" v-if="!this.onOff">
+            <el-table-column label="类别">
+                <template v-slot:default="scope">  
+                    {{ stateContent(scope.row.State)}}
+                </template>  
+            </el-table-column>
+            <el-table-column prop="TradeTime" label="交易时间"></el-table-column>
+            <el-table-column prop="Code" label="代码"></el-table-column>
+            <el-table-column prop="Name" label="名称"></el-table-column>
+            <el-table-column label="交易方向">  
+            <template v-slot:default="scope">  
+                {{ scope.row.Direction === 0 ? '买入' : '卖出' }}  
+            </template>  
+            </el-table-column>
+            <el-table-column label="挂单或成交金额">
+                <template v-slot:default="scope">  
+                    {{ scope.row.State === 2 ? scope.row.KnockPrice : scope.row.Price }}  
+                </template> 
+            </el-table-column>
+            <el-table-column prop="Amount" label="数量"></el-table-column>
+      </el-table>
+
+        <div class="card-container" v-else>
             <div class="card" :class="{'gray-color':isFail(item.State)}" v-for="(item, index) in showHistory" :key="index">
                 <el-row>
                     <el-col :span="6" class="text-left">{{ stateContent(item.State)}}</el-col>
@@ -43,6 +73,7 @@ export default{
             History:[],
             showHistory:[],
             isPressed: true,
+            onOff:false,
         }
     },
     methods:{
@@ -52,12 +83,12 @@ export default{
                 if(!username){
                     throw new Error('Username not found');
                 }
-                const responseRecord = await fetch(`/api/getTradeRecord?username=${username}`);
+                const responseRecord = await fetch(`http://127.0.0.1:12345/getTradeRecord?username=${username}`);
                 if(!responseRecord.ok){
                     throw new Error('Failed to fetch record');
                 }
                 const History =await responseRecord.json();
-                const responseMark = await fetch('/api/getMarketPrice');
+                const responseMark = await fetch('http://127.0.0.1:12345/getMarketPrice');
                 if (!responseMark.ok) {  
                 throw new Error('Failed to fetch Mark');  
                 }
@@ -83,7 +114,7 @@ export default{
                 console.log(error);
             }
         },
-        handleCheckboxChange(event) { 
+        ChangeFilter(event) { 
             if (event.target.checked) {
                 // 如果checkbox被选中，执行某些操作
                 this.showHistory = this.History.filter(item => !this.isFail(item.State));
@@ -113,6 +144,11 @@ export default{
             return function(state) {
                 return state != 1 && state != 2;
             };
+        },
+        isSuccessfulTrade() {
+            return function(state) {
+                return state == 2;
+            };
         }
     }
 }
@@ -124,17 +160,23 @@ export default{
   flex-direction: column;
 }
 
+.container {  
+  display: flex;  
+  justify-content: space-between; /* 两端对齐 */  
+  align-items: center; /* 垂直居中 */  
+} 
+
 .btn-container {
   align-self: flex-start;
   margin-top: 10px;
   margin-left: 20px;
+  margin-bottom: 20px;
   font-weight: bold;
   color: #676c6e;
 }
 
 .card-container {
     margin: 0 auto;
-    padding: 10px;
     width: 100%;
     display: grid;
     grid-template-columns: repeat(auto-fill, 640px);

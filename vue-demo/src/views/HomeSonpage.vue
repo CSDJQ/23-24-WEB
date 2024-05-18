@@ -101,7 +101,7 @@ export default{
   methods:{
     refreshMark(){
         this.timeDisplayer=5;
-        axios.get('/api/getMarketPrice').then(response =>{
+        axios.get('http://127.0.0.1:12345/getMarketPrice').then(response =>{
         const data = response.data;
         
         let filteredData = data.filter(item => item.Code.toString().startsWith('6'));
@@ -173,13 +173,13 @@ export default{
     },
     refreshTrend(){
       this.timeDisplayer = 5;
-      axios.get('/api/getStockPrice?code='+this.selectedCode).then(reponse =>{
+      axios.get('http://127.0.0.1:12345/getStockPrice?code='+this.selectedCode).then(reponse =>{
         this.stockTrend = reponse.data;
         this.updateChart();
       })
     },
     initChart() {
-      axios.get('/api/getStockPrice?code='+this.selectedCode).then(reponse =>{
+      axios.get('http://127.0.0.1:12345/getStockPrice?code='+this.selectedCode).then(reponse =>{
         this.stockTrend = reponse.data;
         this.$nextTick(() => {
         // 获取当前时间戳 

@@ -55,7 +55,7 @@ export default{
         },
         handleSubmit(row){
             if (row.Code && row.Trade && row.Price && row.Amount) {
-                const url = "/api/trade?username=" + sessionStorage.getItem('username') + "&code="
+                const url = "http://127.0.0.1:12345/trade?username=" + sessionStorage.getItem('username') + "&code="
                     + row.Code + "&direction=" + row.Trade + "&price=" + row.Price + "&amount=" + row.Amount;
                 fetch(url)
                 .then(response => response.text())
@@ -94,7 +94,7 @@ export default{
         if(selectedStock){
             this.selectedStock = JSON.parse(selectedStock);
         }
-        const url = "/api/getBalance?username=" + sessionStorage.getItem('username');
+        const url = "http://127.0.0.1:12345/getBalance?username=" + sessionStorage.getItem('username');
         fetch(url)
         .then(response => response.text())
         .then(data =>{

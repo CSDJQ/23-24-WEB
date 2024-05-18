@@ -51,13 +51,13 @@ export default{
             throw new Error('Username not found');  
             }  
     
-            const responseBalance = await fetch(`/api/getBalance?username=${username}`);  
+            const responseBalance = await fetch(`http://127.0.0.1:12345/getBalance?username=${username}`);  
             if (!responseBalance.ok) {  
             throw new Error('Failed to fetch balance');  
             }  
             this.balance = await responseBalance.text();  
     
-            const responseInventory = await fetch(`/api/getInventory?username=${username}`);  
+            const responseInventory = await fetch(`http://127.0.0.1:12345/getInventory?username=${username}`);  
             if (!responseInventory.ok) {  
             throw new Error('Failed to fetch inventory');  
             }  
@@ -73,7 +73,7 @@ export default{
         async refresh(inventoryData){
             try{
                  // 获取数据
-                const responseMark = await fetch('/api/getMarketPrice');
+                const responseMark = await fetch('http://127.0.0.1:12345/getMarketPrice');
                 if (!responseMark.ok) {  
                 throw new Error('Failed to fetch Mark');  
                 }

@@ -51,9 +51,10 @@ const routes = [
 
 const router = createRouter(
     {
-        mode: 'hash',
+        // mode: 'hash',
         history:createWebHashHistory(process.env.BASE_URL),
-        routes
+        routes,
+        assetsPublicPath: './'
     }
 )
 
